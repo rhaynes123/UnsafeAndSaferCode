@@ -15,7 +15,7 @@ class Menu
 	public function GetMenuByType($ItemType)
 	{
 		//Since the purpose of the application is to only show Food or Drinks preventing any other texts help keep the data safe
-		if($ItemType === "Food" || $ItemType === "Drinks" )
+		if(strtolower($ItemType) === "food" || strtolower($ItemType) === "drinks" )
 		{
 			//The code below uses a prepared statement this helps to prevent dangerous inputs from being executed. This is the most common practice for preventing sql injection
 			$query = $this->db->prepare("SELECT * FROM MenuItems Where ItemType =:itemType ");
