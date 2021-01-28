@@ -1,5 +1,6 @@
 <?php
 require_once 'Menu.php';
+require_once 'Helper.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,26 +17,32 @@ require_once 'Menu.php';
 		</tr>
 		<tbody> 
 <?php
-$menu = new Menu();
-// The filter_var function is built into PHP to help prevent people from basing in things like HTMl
-// If someone is able to pass html into an input form they have the ability to possibly send code to be executed by a website.
-$result = $menu->GetMenuByType(filter_var($_POST["name"],FILTER_SANITIZE_STRING));
-
-if(isset($result)) //This is making sure the result code is set before making the table. An error can be thrown if that happens
-{
-	while ($row = $result->fetchArray()) 
-	{
-		print_r("<tr>");
-	    print_r("<td>{$row['Id']}</td><td>{$row['Name']}</td> <td>{$row['BasePrice']}</td> \n");
-	    print_r("</tr>");
+	try{
+		$menu = new Menu();
+		
+		$result = $menu->GetMenuByType(Helper::SafeString($_POST['name']));
+		
+		if(isset($result)) //This is making sure the result code is set before making the table. An error can be thrown if that happens
+			{
+				while ($row = $result->fetchArray()) 
+					{
+						print_r("<tr>");
+						print_r("<td>{$row['Id']}</td><td>{$row['Name']}</td> <td>{$row['BasePrice']}</td> \n");
+						print_r("</tr>");
+					}
+			}
+		else
+			{
+				//This a simple error message to prevent any code errors from being shown on the page
+				//Errors that aren't "caught" or over written can show Hackers information that can help break systems more. 
+				print_r("Whoops Something Failed And No Results Could be Found");
+				print_r("Please make sure not to enter an empty value");
+			}
 	}
-}
-else
-{
-	//This a simple error message to prevent any code errors from being shown on the page
-	//Errors that aren't "caught" or over written can show Hackers information that can help break systems more. 
-	print_r("Whoops Something Failed And No Results Could be Found");
-}
+	catch(Exception $e){
+		print_r("An Unexpected error was caught while getting the menu");
+	}
+
 
 ?>
 		</tbody>
